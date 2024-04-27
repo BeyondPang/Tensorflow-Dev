@@ -29,11 +29,16 @@ model.summary()
 
 model.compile(optimizer=tf.keras.optimizers.Adam(), loss=tf.keras.losses.SparseCategoricalCrossentropy(), metrics=['accuracy'])
 
+from keras.callbacks import EarlyStopping
+# 创建 EarlyStopping 回调，监控验证损失，并设置耐心为 3
+callback = EarlyStopping(monitor='val_loss', patience=3)
+
 history = model.fit(
     np.expand_dims(traing_images, -1), 
     training_labels, 
     epochs=10, 
-    validation_data=(np.expand_dims(val_images, -1), val_labels)
+    validation_data=(np.expand_dims(val_images, -1), val_labels),
+    callbacks=[callback])
 )
 
 test_loss, test_accuracy = model.evaluate(np.expand_dims(test_images, -1), test_labels, verbose=1)

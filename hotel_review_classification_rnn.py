@@ -57,8 +57,8 @@ plt.xlabel('Tokens Length')  # 更正 x 轴标签为词的长度
 # 显示图表
 plt.show()
     
-tokens_length = int(np.mean(tokens_count) + 2 * np.std(tokens_count))
-np.sum(np.array(tokens_count) < tokens_length) / len(tokens_count)
+tokens_length = int(np.mean(token_count) + 2 * np.std(token_count))
+np.sum(np.array(token_count) < tokens_length) / len(token_count)
 
 def reverse_tokens(tokens):
   #return ''.join(cn_model.index_to_key[token] for token in tokens)
@@ -78,13 +78,13 @@ for i in range(num_words):
   embedding_matrix[i] = cn_model[cn_model.index_to_key[i]]
 embedding_matrix = embedding_matrix.astype('float32')
 
-x_train_tokens_pad = tf.keras.preprocessing.sequence.pad_sequences(x_train_tokens, maxlen=token_length, padding='pre', truncating='pre')
+x_train_tokens_pad = tf.keras.preprocessing.sequence.pad_sequences(x_train_tokens, maxlen=tokens_length, padding='pre', truncating='pre')
 x_train_tokens_pad[x_train_tokens_pad>num_words] = 0
 
 x_tokens_train, x_tokens_test, y_train, y_test = train_test_split(x_train_tokens_pad, y_train, test_size=0.1, random_state=42)
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Embedding(num_words, num_dims, weights=[embedding_matrix], input_length=token_length, trainable=False),
+    tf.keras.layers.Embedding(num_words, num_dims, weights=[embedding_matrix], input_length=tokens_length, trainable=False),
     tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64, return_sequences=True)),
     tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(32)),
     tf.keras.layers.Dense(64, activation='relu'),
@@ -120,7 +120,7 @@ def predict_sentiment(text):
       cut_list[i] = cn_model.key_to_index[word]
     except KeyError:
       cut_list[i] = 0
-  token_pad = tf.keras.preprocessing.sequence.pad_sequences([cut_list], maxlen=token_length, padding='pre', truncating='pre')
+  token_pad = tf.keras.preprocessing.sequence.pad_sequences([cut_list], maxlen=tokens_length, padding='pre', truncating='pre')
   token_pad[token_pad>num_words] = 0
   result = model.predict(token_pad)
   if result[0][0] > 0:

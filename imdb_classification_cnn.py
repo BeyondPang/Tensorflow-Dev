@@ -43,7 +43,7 @@ def cnn_mulfilters():
 model = cnn_mulfilters()
 model.summary()
 
-history = model.fit(x_train, y_train, epochs=10, batch_size=64, validation_split=0.2)
+history = model.fit(x_train, y_train, epochs=10, batch_size=64, validation_split=0.1)
 
 plt.plot(history.history['accuracy'])
 plt.plot(history.history['val_accuracy'])
